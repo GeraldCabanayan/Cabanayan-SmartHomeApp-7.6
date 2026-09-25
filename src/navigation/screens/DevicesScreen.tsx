@@ -14,9 +14,11 @@ import { useIoT } from '../../context/IoTContext';
 
 export default function DevicesScreen() {
 
-  const {
+  const { // adding the isGatewayConnected and isLoading for Activity 8
     devices,
     toggleDevice,
+    isGatewayConnected, 
+    updatingDeviceIds,
   } = useIoT();
 
   return (
@@ -59,7 +61,8 @@ export default function DevicesScreen() {
               </Text>
 
               <Text style={styles.deviceState}>
-                {device.status ? 'ON' : 'OFF'}
+                {updatingDeviceIds.includes(device.id) ? 'Updating' : device.status ? 'ON' : 'OFF'} {/* Display Updating while a device command is processing */}
+
               </Text>
 
             </View>
@@ -68,6 +71,8 @@ export default function DevicesScreen() {
 
           <Switch
             value={device.status}
+            /* Disable the switch if the gateway is not connected or if a device command is processing */
+            disabled={!isGatewayConnected || updatingDeviceIds.includes(device.id)} 
             onValueChange={(value) => {
               toggleDevice(device.id, value);
             }}
