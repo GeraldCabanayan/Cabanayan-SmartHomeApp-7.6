@@ -29,6 +29,10 @@ export function IoTProvider({
     children: React.ReactNode;
 }) {
 
+const [isGatewayConnected, setIsGatewayConnected] = useState(true);
+const [isLoading, setIsLoading] = useState(false);
+const [error, setError] = useState<string | null>(null);
+
     const [deviceStatus, setDeviceStatus] = useState(
         sampleDevices.reduce((acc, device) => {
             acc[device.id] = device.status;
