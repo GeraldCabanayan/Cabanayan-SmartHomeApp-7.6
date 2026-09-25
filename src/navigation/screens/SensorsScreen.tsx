@@ -2,13 +2,22 @@ import React from 'react';
 import {
   View,
   Text,
+  TouchableOpacity,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 
+import { useIoT } from '../../context/IoTContext';
 import { Ionicons } from '@expo/vector-icons';
 
+
 export default function SensorsScreen() {
+    const {
+    sensors,
+    isSensorsLoading,
+    refreshSensors,
+  } = useIoT();
   return (
     <ScrollView style={styles.container}>
 
@@ -20,6 +29,22 @@ export default function SensorsScreen() {
       <Text style={styles.subtitle}>
         Monitor your environment
       </Text>
+
+      <TouchableOpacity
+  style={styles.refreshButton}
+  onPress={refreshSensors}
+  disabled={isSensorsLoading}
+>
+  {isSensorsLoading ? (
+    <ActivityIndicator size="small" color="#fff" />
+  ) : (
+    <Ionicons name="refresh" size={18} color="#fff" />
+  )}
+
+  <Text style={styles.refreshButtonText}>
+    {isSensorsLoading ? 'Refreshing...' : 'Refresh Sensors'}
+  </Text>
+</TouchableOpacity>
 
       {/* Temperature */}
       <View style={styles.sensorCard}>
@@ -38,7 +63,7 @@ export default function SensorsScreen() {
         </View>
 
         <Text style={styles.sensorValue}>
-          28°C
+          {sensors.temperature}°C
         </Text>
 
         <Text style={styles.sensorDescription}>
@@ -64,7 +89,7 @@ export default function SensorsScreen() {
         </View>
 
         <Text style={styles.sensorValue}>
-          65%
+          {sensors.humidity}%
         </Text>
 
         <Text style={styles.sensorDescription}>
@@ -90,7 +115,7 @@ export default function SensorsScreen() {
         </View>
 
         <Text style={styles.sensorValue}>
-          720 lux
+          {sensors.lightLevel} lux
         </Text>
 
         <Text style={styles.sensorDescription}>
@@ -149,5 +174,22 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: 5,
   },
+
+  refreshButton: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: '#333',
+  paddingVertical: 12,
+  borderRadius: 10,
+  marginBottom: 20,
+  gap: 8,
+},
+
+refreshButtonText: {
+  color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 14,
+},
 
 });
