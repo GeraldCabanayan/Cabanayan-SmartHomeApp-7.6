@@ -29,13 +29,11 @@ export function IoTProvider({
     children: React.ReactNode;
 }) {
 
-<<<<<<< Updated upstream
-=======
 const [isGatewayConnected, setIsGatewayConnected] = useState(true);
 const [updatingDeviceIds, setUpdatingDeviceIds] = useState<number[]>([]);
 const [error, setError] = useState<string | null>(null);
 
->>>>>>> Stashed changes
+
     const [deviceStatus, setDeviceStatus] = useState(
         sampleDevices.reduce((acc, device) => {
             acc[device.id] = device.status;
