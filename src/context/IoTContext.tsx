@@ -14,7 +14,7 @@ type IoTContextType = {
     devices: typeof sampleDevices;
     sensors: SensorData;
     isGatewayConnected: boolean;
-    isLoading: boolean;
+    updatingDeviceIds: number[];   // replaces isLoading
     error: string | null;
     toggleDevice: (id: number, value: boolean) => void;
 };
@@ -30,8 +30,9 @@ export function IoTProvider({
 }) {
 
 const [isGatewayConnected, setIsGatewayConnected] = useState(true);
-const [isLoading, setIsLoading] = useState(false);
+const [updatingDeviceIds, setUpdatingDeviceIds] = useState<number[]>([]);
 const [error, setError] = useState<string | null>(null);
+
 
     const [deviceStatus, setDeviceStatus] = useState(
         sampleDevices.reduce((acc, device) => {
@@ -44,13 +45,17 @@ const [error, setError] = useState<string | null>(null);
     const toggleDevice = (
         id: number,
         value: boolean
-    ) => {
+    ) => {if (!isGatewayConnected) return;
 
-        setDeviceStatus({
-            ...deviceStatus,
+    setUpdatingDeviceIds((prev) => [...prev, id]);
+
+    setTimeout(() => {
+        setDeviceStatus((prev) => ({
+            ...prev,
             [id]: value,
-        });
-
+        }));
+        setUpdatingDeviceIds((prev) => prev.filter((deviceId) => deviceId !== id));
+    }, 1000);
     };
 
     const updatedDevices = sampleDevices.map((device) => ({
@@ -69,9 +74,9 @@ const [error, setError] = useState<string | null>(null);
             value={{
                 devices: updatedDevices,
                 sensors,
-                isGatewayConnected: true,
-                isLoading: false,
-                error: null,
+                isGatewayConnected, // error was that it was been hardcoded to true
+                updatingDeviceIds, // error was that it was been hardcoded to false
+                error, // error was that it was been hardcoded to null
                 toggleDevice,
             }}
         >
