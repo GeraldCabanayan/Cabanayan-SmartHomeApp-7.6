@@ -25,9 +25,15 @@ type IoTContextType = {
     isDevicesLoading: boolean; // For Activity 10: it will track the inital dedvice fetch and separate from the updatingDeviceIds state that tracks individual device updates
     isGatewayConnected: boolean;
     updatingDeviceIds: number[];   // replaces isLoading
-    error: string | null;
+
     toggleDevice: (id: number, value: boolean) => void;
     refreshSensors: () => void; // function to refresh sensor data
+    refreshDevices: () => void; // function to refresh device data and lets a retry button to re run the device fetch
+                                // if it fails the first time. It is not used in the app yet, but it is a good idea to have it for future use.
+
+    devicesError: string | null;//replacing the single error with the three separate independent error 
+    sensorsError: string | null; //states for devices, sensors, and device actions to provide more granular error handling
+    deviceActionError: string | null;
 };
 
 const IoTContext = createContext<IoTContextType | undefined>(
@@ -42,23 +48,31 @@ export function IoTProvider({
 
 const [isGatewayConnected, setIsGatewayConnected] = useState(true);
 const [updatingDeviceIds, setUpdatingDeviceIds] = useState<number[]>([]);
-const [error, setError] = useState<string | null>(null);
+
+//Three separate error states for devices, sensors, and device actions to provide more granular error handling
+const [devicesError, setDevicesError] = useState<string | null>(null);
+const [sensorsError, setSensorsError] = useState<string | null>(null);
+const [deviceActionError, setDeviceActionError] = useState<string | null>(null);
 
 
 const [devices, setDevices] = useState<Device[]>([]);
-    const [isDevicesLoading, setIsDevicesLoading] = useState(false);
+const [isDevicesLoading, setIsDevicesLoading] = useState(false);
 
-    // Activity 10: fetch the device list once, when the Provider first mounts.
-    // Empty [] dependency array = run only on initial mount, like a page load
-    // hitting a real backend for the first time.
-    useEffect(() => {
+
+
+  const loadDevices = () => { //extracted the device fetch logic into a separate function so it can be called on demand (e.g., for a retry button)
         setIsDevicesLoading(true);
+        setDevicesError(null); // clear any previous error before trying again
 
         getDevices()
             .then((data) => setDevices(data)) // success: store what the service returned
-            .catch((err) => setError(err.message)) // failure: store the error message instead of crashing
+            .catch((err) => setDevicesError(err.message)) // failure: store the error message instead of crashing
             .finally(() => setIsDevicesLoading(false)); // either way: loading is done
-    }, []);
+    };
+
+    useEffect(() => { // start fetching devices when the component mounts
+        loadDevices(); // 
+    }, []); 
 
     const toggleDevice = async (
         // Activity 10: function is now "async" because it uses "await" inside —
@@ -69,11 +83,9 @@ const [devices, setDevices] = useState<Device[]>([]);
         if (!isGatewayConnected) return;
 
         setUpdatingDeviceIds((prev) => [...prev, id]);
+        setDeviceActionError(null); // clear any previous error before trying again
 
         try {
-            // Activity 10: replaced the old inline setTimeout with a real
-            // await call to the service — the "network delay" now lives
-            // inside IoTService.ts, not duplicated here
             await updateDeviceStatus(id, value);
 
             // Activity 10: update the devices array directly (no more
@@ -87,7 +99,9 @@ const [devices, setDevices] = useState<Device[]>([]);
         } catch (err) {
             // Activity 10: new — if the service throws (simulated failure),
             // catch it here and store a message instead of letting it crash the app
-            setError(err instanceof Error ? err.message : 'Unable to update device.');
+
+            const device = devices.find((d) => d.id === id);
+            setDeviceActionError('Unable to update device ' + (device ? device.name : id) + '.');//changed to show the error message first and then the device actual name.
         } finally {
             setUpdatingDeviceIds((prev) => prev.filter((deviceId) => deviceId !== id));
         }
@@ -103,6 +117,7 @@ const [devices, setDevices] = useState<Device[]>([]);
     const [isSensorsLoading, setIsSensorsLoading] = useState(false);
 
     const refreshSensors = async () => {
+        setSensorsError(null); // clear any previous error before trying again
         // Activity 10: now "async" — awaits the service instead of using setTimeout directly
         setIsSensorsLoading(true);
 
@@ -112,7 +127,7 @@ const [devices, setDevices] = useState<Device[]>([]);
             setSensors(data);
         } catch (err) {
             // Activity 10: new — handle a simulated sensor-fetch failure gracefully
-            setError(err instanceof Error ? err.message : 'Unable to retrieve sensor data.');
+            setSensorsError(err instanceof Error ? err.message : 'Unable to retrieve sensor data.');
         } finally {
             setIsSensorsLoading(false);
         }
@@ -128,7 +143,10 @@ const [devices, setDevices] = useState<Device[]>([]);
                 refreshSensors, // error was that it was been hardcoded to undefined
                 isGatewayConnected, // error was that it was been hardcoded to true
                 updatingDeviceIds, // error was that it was been hardcoded to false
-                error, // error was that it was been hardcoded to null
+                devicesError,
+                sensorsError,
+                deviceActionError,
+                refreshDevices: loadDevices, 
                 toggleDevice,
             }}
         >

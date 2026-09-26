@@ -16,6 +16,7 @@ export default function SensorsScreen() {
     const {
     sensors,
     isSensorsLoading,
+    sensorsError,
     refreshSensors,
   } = useIoT();
   return (
@@ -46,88 +47,120 @@ export default function SensorsScreen() {
   </Text>
 </TouchableOpacity>
 
-      {/* Temperature */}
-      <View style={styles.sensorCard}>
 
-        <View style={styles.sensorHeader}>
+ {/* Activity 11: full loading state, exact text the spec asks for */}
+      {isSensorsLoading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" />
+          <Text style={styles.loadingText}>
+            Refreshing Sensors...
+          </Text>
+        </View>
+      )}
 
-          <Ionicons
-            name="thermometer-outline"
-            size={30}
-          />
-
-          <Text style={styles.sensorName}>
-            Temperature
+      {/* Activity 11: sensor error + Retry */}
+      {!isSensorsLoading && sensorsError && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>
+            {sensorsError}
           </Text>
 
+          <TouchableOpacity
+            style={styles.retryButton}
+            onPress={refreshSensors}
+          >
+            <Text style={styles.retryButtonText}>
+              Retry
+            </Text>
+          </TouchableOpacity>
         </View>
+      )}
 
-        <Text style={styles.sensorValue}>
-          {sensors.temperature}°C
-        </Text>
+      {/* Only show the actual readings once loading is done and there's no error */}
+{!isSensorsLoading && !sensorsError && (
+  <>
+    {/* Temperature */}
+    <View style={styles.sensorCard}>
 
-        <Text style={styles.sensorDescription}>
-          Current room temperature
+      <View style={styles.sensorHeader}>
+
+        <Ionicons
+          name="thermometer-outline"
+          size={30}
+        />
+
+        <Text style={styles.sensorName}>
+          Temperature
         </Text>
 
       </View>
 
-      {/* Humidity */}
-      <View style={styles.sensorCard}>
+      <Text style={styles.sensorValue}>
+        {sensors.temperature}°C
+      </Text>
 
-        <View style={styles.sensorHeader}>
+      <Text style={styles.sensorDescription}>
+        Current room temperature
+      </Text>
 
-          <Ionicons
-            name="water-outline"
-            size={30}
-          />
+    </View>
 
-          <Text style={styles.sensorName}>
-            Humidity
-          </Text>
+    {/* Humidity */}
+    <View style={styles.sensorCard}>
 
-        </View>
+      <View style={styles.sensorHeader}>
 
-        <Text style={styles.sensorValue}>
-          {sensors.humidity}%
-        </Text>
+        <Ionicons
+          name="water-outline"
+          size={30}
+        />
 
-        <Text style={styles.sensorDescription}>
-          Current relative humidity
-        </Text>
-
-      </View>
-
-      {/* Light Level */}
-      <View style={styles.sensorCard}>
-
-        <View style={styles.sensorHeader}>
-
-          <Ionicons
-            name="sunny-outline"
-            size={30}
-          />
-
-          <Text style={styles.sensorName}>
-            Light Level
-          </Text>
-
-        </View>
-
-        <Text style={styles.sensorValue}>
-          {sensors.lightLevel} lux
-        </Text>
-
-        <Text style={styles.sensorDescription}>
-          Current ambient light
+        <Text style={styles.sensorName}>
+          Humidity
         </Text>
 
       </View>
 
+      <Text style={styles.sensorValue}>
+        {sensors.humidity}%
+      </Text>
+
+      <Text style={styles.sensorDescription}>
+        Current relative humidity
+      </Text>
+
+    </View>
+
+    {/* Light Level */}
+    <View style={styles.sensorCard}>
+
+      <View style={styles.sensorHeader}>
+
+        <Ionicons
+          name="sunny-outline"
+          size={30}
+        />
+
+        <Text style={styles.sensorName}>
+          Light Level
+        </Text>
+
+      </View>
+
+      <Text style={styles.sensorValue}>
+        {sensors.lightLevel} lux
+      </Text>
+
+      <Text style={styles.sensorDescription}>
+        Current ambient light
+      </Text>
+
+    </View>
+  </>
+)} 
     </ScrollView>
   );
-}
-
+};
 const styles = StyleSheet.create({
 
   container: {
@@ -191,5 +224,41 @@ refreshButtonText: {
   fontWeight: 'bold',
   fontSize: 14,
 },
+
+loadingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+  },
+
+  loadingText: {
+    marginTop: 10,
+    fontSize: 14,
+  },
+
+  errorContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 30,
+  },
+
+  errorText: {
+    fontSize: 14,
+    color: '#b3261e',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+
+  retryButton: {
+    backgroundColor: '#333',
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+
+  retryButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
 
 });
