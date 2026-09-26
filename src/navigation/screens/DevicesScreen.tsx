@@ -6,6 +6,8 @@ import {
   StyleSheet,
   ScrollView,
   Switch,
+  ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -19,6 +21,10 @@ export default function DevicesScreen() {
     toggleDevice,
     isGatewayConnected, 
     updatingDeviceIds,
+    isDevicesLoading,
+    devicesError,
+    deviceActionError,
+    refreshDevices,
   } = useIoT();
 
   return (
@@ -32,7 +38,54 @@ export default function DevicesScreen() {
         Control your connected devices
       </Text>
 
-      {devices.map((device) => (
+      {/* Activity 11: Gateway disconnected banner */}
+      {!isGatewayConnected && (
+        <View style={styles.bannerError}>
+          <Text style={styles.bannerErrorText}>
+            IoT Gateway is disconnected.
+          </Text>
+        </View>
+      )}
+
+        {/* Activity 11: shows when a specific device's toggle command failed */}
+      {deviceActionError && (
+        <View style={styles.bannerError}>
+          <Text style={styles.bannerErrorText}>
+            {deviceActionError}
+          </Text>
+        </View>
+      )}
+
+         {/* Activity 11: Device loading state */}
+      {isDevicesLoading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" />
+          <Text style={styles.loadingText}>
+            Loading devices...
+          </Text>
+        </View>
+      )}
+
+       {/* Activity 11: Device fetch error + Retry */}
+      {!isDevicesLoading && devicesError && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>
+            {devicesError}
+          </Text>
+
+          <TouchableOpacity
+            style={styles.retryButton}
+            onPress={refreshDevices}
+          >
+            <Text style={styles.retryButtonText}>
+              Retry
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+     {/* Only render the device list once loading is done and there's no error */}
+      {!isDevicesLoading && !devicesError && devices.map((device) => (
 
         <View
           key={device.id}
@@ -102,6 +155,56 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 5,
     marginBottom: 25,
+  },
+
+    bannerError: {
+    backgroundColor: '#fdecea',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 15,
+  },
+
+  bannerErrorText: {
+    color: '#b3261e',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+
+  loadingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
+   errorContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 30,
+  },
+
+  errorText: {
+    fontSize: 14,
+    color: '#b3261e',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+
+  retryButton: {
+    backgroundColor: '#333',
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+
+  retryButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 
   deviceCard: {
