@@ -101,7 +101,7 @@ const [isDevicesLoading, setIsDevicesLoading] = useState(false);
             // catch it here and store a message instead of letting it crash the app
 
             const device = devices.find((d) => d.id === id);
-            setDeviceActionError('Unable to update device ' + (device ? device.name : id) + '.');//changed to show the error message first and then the device actual name.
+            setDeviceActionError('Unable to update ' + (device ? device.name : id) + '.');//changed to show the error message first and then the device actual name.
         } finally {
             setUpdatingDeviceIds((prev) => prev.filter((deviceId) => deviceId !== id));
         }
