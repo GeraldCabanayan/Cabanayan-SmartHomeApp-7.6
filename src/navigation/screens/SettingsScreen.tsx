@@ -8,11 +8,14 @@ import {
 } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
+import { useIoT } from '../../context/IoTContext';
 
 export default function SettingsScreen() {
+ //it will pull real connection state from Context instead of faking it locally
+  const { isGatewayConnected, toggleGatewayConnection } = useIoT();
 
+//removing the autoconnect state and toggle from local state and instead using the real connection state from Context
   const [notifications, setNotifications] = useState(true);
-  const [autoConnect, setAutoConnect] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
 
   return (
@@ -83,11 +86,11 @@ export default function SettingsScreen() {
           <View style={styles.settingText}>
 
             <Text style={styles.settingName}>
-              Auto Connect
+              Gateway Connection
             </Text>
 
             <Text style={styles.settingDescription}>
-              Automatically connect to the IoT gateway
+              Turn on/off the IoT Gateway connection
             </Text>
 
           </View>
@@ -95,8 +98,8 @@ export default function SettingsScreen() {
         </View>
 
         <Switch
-          value={autoConnect}
-          onValueChange={setAutoConnect}
+          value={isGatewayConnected}
+          onValueChange={toggleGatewayConnection}
         />
 
       </View>

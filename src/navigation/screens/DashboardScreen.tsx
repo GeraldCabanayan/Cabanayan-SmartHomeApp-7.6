@@ -6,16 +6,8 @@ import { useIoT } from '../../context/IoTContext';
 
 
 export default function DashboardScreen() {
-    // const [deviceStatus, setDeviceStatus] = useState(
-    //     devices.reduce((acc, device) => {
-    //         acc[device.id] = device.status;
-    //         return acc;
-    //     }, {} as Record<number, boolean>)
-    // );
 
-    const { devices, 
-        sensors, 
-        toggleDevice } = useIoT();
+    const { devices, sensors,toggleDevice } = useIoT();
 
     return (
         <View style={styles.container}>
@@ -33,7 +25,7 @@ export default function DashboardScreen() {
                 <View style={styles.sensorCard}>
                     <View style={styles.sensorHeader}>
                         <Ionicons
-                            name="water-outline"
+                            name="thermometer-outline" //changing the icon to a thermometer outline
                             size={22}
                         />
 
@@ -70,34 +62,7 @@ export default function DashboardScreen() {
                 Device Status
             </Text>
 
-            {/* <View style={styles.deviceCard}>
-
-                <View style={styles.deviceInfo}>
-                    <Text style={styles.deviceIcon}>
-                        💡
-                    </Text>
-
-                    <View>
-                        <Text style={styles.deviceName}>
-                            Living Room Light
-                        </Text>
-
-                        <Text style={styles.deviceType}>
-                            Smart Light
-                        </Text>
-                    </View>
-                </View>
-
-                <Text style={styles.deviceStatus}>
-                    ON
-                </Text>
-
-            </View>
-
-        </View>
-    ); */}
-
-            {devices.map((device) => (
+         {devices.map((device) => (
 
                 <View
                     key={device.id}
