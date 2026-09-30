@@ -24,6 +24,7 @@ type IoTContextType = {
     isSensorsLoading: boolean; // For Activity 9
     isDevicesLoading: boolean; // For Activity 10: it will track the inital dedvice fetch and separate from the updatingDeviceIds state that tracks individual device updates
     isGatewayConnected: boolean;
+    toggleGatewayConnection: () => void; //it will be used to toggle the gateway connection state in the SettingsScreen
     updatingDeviceIds: number[];   // replaces isLoading
 
     toggleDevice: (id: number, value: boolean) => void;
@@ -53,6 +54,11 @@ const [updatingDeviceIds, setUpdatingDeviceIds] = useState<number[]>([]);
 const [devicesError, setDevicesError] = useState<string | null>(null);
 const [sensorsError, setSensorsError] = useState<string | null>(null);
 const [deviceActionError, setDeviceActionError] = useState<string | null>(null);
+
+    // Settings screen calls this to simulate a connect/disconnect
+    const toggleGatewayConnection = () => {
+        setIsGatewayConnected((prev) => !prev);
+    };
 
 
 const [devices, setDevices] = useState<Device[]>([]);
@@ -143,6 +149,7 @@ const [isDevicesLoading, setIsDevicesLoading] = useState(false);
                 refreshSensors, // error was that it was been hardcoded to undefined
                 isGatewayConnected, // error was that it was been hardcoded to true
                 updatingDeviceIds, // error was that it was been hardcoded to false
+                toggleGatewayConnection,
                 devicesError,
                 sensorsError,
                 deviceActionError,
