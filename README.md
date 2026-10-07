@@ -1,12 +1,16 @@
-Smart Home App
+**Smart Home App**
 
 A React Native (Expo) smart home application for monitoring sensors and controlling IoT devices. It is backed by a Node.js/Express REST API and a SQLite database, so device states and sensor readings are saved and persist after the app is closed.
+****
 
-Overview
+
+**Overview**
 
 The app provides a user interface for interacting with smart home devices and viewing sensor information. The frontend uses React Native with Expo, drawer navigation, and the React Context API for state management. A service layer sends HTTP requests to the backend, which reads and writes data in a SQLite database.
 
-Features
+****
+
+**Features**
   - Dashboard for smart home information
   - IoT device management (list devices and turn them on or off)
   - Device status saved in the database
@@ -21,27 +25,31 @@ Features
   - SQLite database created automatically on first run
 
 
+
+****
+**Steps for my project to work:**
 1. Install dependencies
   - npm install
 2. Start the backend (Terminal 1)
   - npm run server
 
-You should see:
+    You should see:
 
-Connected to SQLite database.
-API running on http://localhost:3000
+      Connected to SQLite database.
+      API running on http://localhost:3000
 
-On the first run, the database file database/smarthome.db is created automatically with the tables 
-(database/schema.sql) and sample data (database/seed.sql).
+      On the first run, the database file database/smarthome.db is created automatically with the tables 
+      (database/schema.sql) and sample data (database/seed.sql).
 
 3. Start the app (Terminal 2)
   - npx expo start
 
-Keep both terminals running while using the app.
+  Should keep both terminals running while using the app.
+
+****
 
 
-
-My Project Structure.
+**My Project Structure.**
 ├── App.tsx
 ├── server.js                 # Express server entry point
 ├── server/
@@ -58,3 +66,6 @@ My Project Structure.
     ├── model/IoTModels.ts
     ├── services/IoTService.ts
     └── navigation/           # Drawer navigation and screens
+
+
+    
